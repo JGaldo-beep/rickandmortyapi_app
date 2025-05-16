@@ -48,9 +48,17 @@ fun CharacterListScreen(
 
         is CharactersUiState.Success -> {
             val characters = (uiState as CharactersUiState.Success).values
-            CharacterList(
-                characters = characters,
-            )
+            if (characters.isEmpty()) {
+                ErrorScreen(
+                    retryAction = viewModel::getResources,
+                    modifier = modifier.fillMaxSize()
+                )
+            }
+            else {
+                CharacterList(
+                    characters = characters,
+                )
+            }
         }
 
         is CharactersUiState.Error -> {

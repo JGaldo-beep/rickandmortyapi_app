@@ -1,8 +1,10 @@
 package com.example.rickandmortyapi.data
 
+import android.content.Context
+import com.example.rickandmortyapi.data.database.DatabaseRickAndMorty
 import com.example.rickandmortyapi.data.network.RickMortyApiService
-import com.example.rickandmortyapi.data.repository.NetworkCharactersRepository
 import com.example.rickandmortyapi.data.repository.CharactersRepository
+import com.example.rickandmortyapi.data.repository.CharactersRepositoryImp
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -12,7 +14,7 @@ interface AppContainer {
     val charactersRepository: CharactersRepository
 }
 
-class DefaultAppContainer : AppContainer {
+class DefaultAppContainer(private val context: Context) : AppContainer {
     private val baseUrl =
         "https://rickandmortyapi.com/api/"
 
@@ -28,6 +30,9 @@ class DefaultAppContainer : AppContainer {
     }
 
     override val charactersRepository: CharactersRepository by lazy {
-        NetworkCharactersRepository(retrofitService)
+        CharactersRepositoryImp(
+            rickMortyApiService = retrofitService,
+            characterDao = DatabaseRickAndMorty.getDatabase(context).characterDao()
+        )
     }
 }
